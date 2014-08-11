@@ -1,0 +1,36 @@
+{
+  "name": "formalize",
+  "description": "ActiveRecord ORM layer for FoundationDB",
+  "version": "0.0.1",
+  "contributors": [
+    {
+      "name": "Ashley Brener",
+      "url": "http://frisB.com"
+    }
+  ],
+  "main": "src/",
+  "engines": {
+    "node": ">= 0.8.x"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-coffee": "^0.10.1"
+  },
+  "bugs": {
+    "url": "https://github.com/frisb/formalize/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/frisb/formalize"
+  },
+  "dependencies": {
+    "bson": "^0.2.9",
+    "fdb": "^2.0.0"
+  },
+  "keywords": [
+    "fdb",
+    "foundationdb"
+  ]
+}
