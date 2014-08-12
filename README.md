@@ -4,7 +4,7 @@
 
 Formalize is an ActiveRecord ORM layer for FoundationDB.
 
-All contributions are welcome.
+This module is in alpha and work is still in progress. All contributions are welcome.
 
 ## Example Usage
 
@@ -13,7 +13,7 @@ var Formalize = require('formalize')('foundationdb');
 
 var options = {
   schema: {
-    firstName: 'f'
+    firstName: 'f',
     lastName: 'l'
   }
 }
@@ -21,8 +21,8 @@ var options = {
 var Person = Formalize.ActiveRecord('Person', options);
 
 var p = new Person();
-p.firstName = 'Ashley'
-p.lastName = 'Brener'
+p.firstName = 'Ashley';
+p.lastName = 'Brener';
 
 p.save(function () {
   Person.all(function (err, people) {
