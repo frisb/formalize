@@ -4,6 +4,9 @@ utils = require('../utils')
 BatchQuery = require('../query/batch')
 
 module.exports = (ActiveRecord) ->
+  console.log(ActiveRecord)
+
+
   subspace = new fdb.Subspace([ActiveRecord::typeName])
 
   (tr, callback) ->
@@ -29,6 +32,8 @@ module.exports = (ActiveRecord) ->
           map[id] = i
           rec = new ActiveRecord(id)
           result.push(rec)
+
+        console.log(rec)
 
         if (dest)
           rec.attributes[dest] = utils.unpack(pair.value)
