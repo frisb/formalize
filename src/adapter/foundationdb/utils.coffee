@@ -1,4 +1,6 @@
-module.exports = (fdb) ->
+fdb = require('fdb').apiVersion(200)
+
+module.exports =
   pack: (val) ->
     switch typeof val
       when 'undefined' then return fdb.tuple.pack([0, ''])                    # undefined

@@ -14,5 +14,7 @@ module.exports = class Schema
       for s, d of initializer
         @src.push(s)
         @dest.push(d)
-        @map[d] = i
+        @map[s] = i
         i++
+
+  getDest: (src) -> @dest[@map[src]]
