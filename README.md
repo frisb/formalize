@@ -4,7 +4,7 @@
 
 Formalize is an ActiveRecord ORM layer for FoundationDB.
 
-This module is in alpha and work is still in progress. All contributions are welcome.
+This module is still early alpha and work is in progress. All contributions are welcome.
 
 ## Example Usage
 
