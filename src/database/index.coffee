@@ -1,7 +1,5 @@
 {EventEmitter} = require('events')
 
-extend = (a, b) -> a[key] = val for key, val of b
-
 module.exports = class Database extends EventEmitter
   constructor: (@name) ->
     @ActiveRecord = require('../activerecord')(@)
