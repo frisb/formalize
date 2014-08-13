@@ -1,13 +1,10 @@
 fdb = require('fdb').apiVersion(200)
 utils = require('../utils')
 
-BatchQuery = require('../query/batch')
-
 module.exports = (ActiveRecord) ->
-  console.log(ActiveRecord)
+  BatchQuery = require('../query/batch')(@db)
 
-
-  subspace = new fdb.Subspace([ActiveRecord::typeName])
+  subspace = @getSubspace(ActiveRecord)
 
   (tr, callback) ->
     if (typeof(tr) is 'function')

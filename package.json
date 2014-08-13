@@ -1,14 +1,14 @@
 {
   "name": "formalize",
   "description": "ActiveRecord ORM layer for FoundationDB",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "contributors": [
     {
       "name": "Ashley Brener",
       "url": "http://frisB.com"
     }
   ],
-  "main": "lib/",
+  "main": "src/",
   "engines": {
     "node": ">= 0.8.x"
   },
@@ -26,7 +26,7 @@
     "url": "https://github.com/frisb/formalize"
   },
   "dependencies": {
-    "bson": "^0.2.9",
+    "bson": "^0.2.11",
     "fdb": "^2.0.0"
   },
   "keywords": [

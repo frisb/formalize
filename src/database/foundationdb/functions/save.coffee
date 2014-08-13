@@ -1,10 +1,10 @@
-db = require('../db')
 fdb = require('fdb').apiVersion(200)
 utils = require('../utils')
 
 module.exports = (ActiveRecord) ->
-  subspace = new fdb.Subspace([ActiveRecord::typeName])
+  subspace = @getSubspace(ActiveRecord)
   schema = ActiveRecord::schema
+  db = @db
 
   (tr0, callback) ->
     if (typeof(tr0) is 'function')

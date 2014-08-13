@@ -1,10 +1,10 @@
 fdb = require('fdb').apiVersion(200)
 utils = require('../utils')
 
-ArrayQuery = require('../query/array')
-
 module.exports = (ActiveRecord) ->
-  subspace = new fdb.Subspace([ActiveRecord::typeName])
+  ArrayQuery = require('../query/array')(@db)
+
+  subspace = @getSubspace(ActiveRecord)
   schema = ActiveRecord::schema
 
   (tr, callback) ->

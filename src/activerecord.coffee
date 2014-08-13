@@ -1,10 +1,8 @@
-Adapter = require('./adapter')
 Record = require('./record')
 Schema = require('./schema')
 
-module.exports = (dbType) ->
-  adapter = new Adapter(dbType)
-  generateID = adapter.getIdGenerator()
+module.exports = (db) ->
+  generateID = db.getIdGenerator()
 
   (typeName, options) ->
     schema = new Schema(options.schema)
@@ -16,12 +14,12 @@ module.exports = (dbType) ->
 
     ActiveRecord::typeName = typeName
     ActiveRecord::schema = schema
-    
-    ActiveRecord.all = adapter.getAllFunction(ActiveRecord)
-    ActiveRecord.fetch = adapter.getFetchFunction(ActiveRecord)
 
-    ActiveRecord::load = adapter.getLoadFunction(ActiveRecord)
-    ActiveRecord::save = adapter.getSaveFunction(ActiveRecord)
+    ActiveRecord.all = db.getAllFunction(ActiveRecord)
+    ActiveRecord.fetch = db.getFetchFunction(ActiveRecord)
+
+    ActiveRecord::load = db.getLoadFunction(ActiveRecord)
+    ActiveRecord::save = db.getSaveFunction(ActiveRecord)
 
     applyProperty = (src) ->
       Object.defineProperty ActiveRecord::, src,

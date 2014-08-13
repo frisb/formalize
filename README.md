@@ -9,29 +9,30 @@ This module is in alpha and work is still in progress. All contributions are wel
 ## Example Usage
 
 ``` js
-var Formalize = require('formalize')('foundationdb');
+var Formalize = require('formalize');
 
-var options = {
-  schema: {
-    firstName: 'f',
-    lastName: 'l'
-  }
-}
-
-var Person = Formalize.ActiveRecord('Person', options);
-
-var p = new Person();
-p.firstName = 'Ashley';
-p.lastName = 'Brener';
-
-p.save(function () {
-  Person.all(function (err, people) {
-    if (!err) {
-      console.log(people);
+Formalize('MyDatabase', function (F) {
+  var options = {
+    schema: {
+      firstName: 'f',
+      lastName: 'l'
     }
-  });
-);
+  };
 
+  var Person = Formalize.ActiveRecord('Person', options);
+
+  var p = new Person();
+  p.firstName = 'Ashley';
+  p.lastName = 'Brener';
+
+  p.save(function () {
+    Person.all(function (err, people) {
+      if (!err) {
+        console.log(people);
+      }
+    });
+  );
+});
 ```
 
 ## Installation
