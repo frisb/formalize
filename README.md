@@ -19,7 +19,7 @@ Formalize('MyDatabase', function (F) {
     }
   };
 
-  var Person = Formalize.ActiveRecord('Person', options);
+  var Person = F.ActiveRecord('Person', options);
 
   var p = new Person();
   p.firstName = 'Ashley';
