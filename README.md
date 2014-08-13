@@ -2,7 +2,7 @@
 
 [![npm status badge](https://nodei.co/npm/formalize.png?stars=true&downloads=true)](https://nodei.co/npm/formalize/)
 
-Formalize is an ActiveRecord ORM layer for FoundationDB.
+Formalize is an ActiveRecord ORM layer for [FoundationDB](http://foundationdb.com).
 
 This module is still early alpha and work is in progress. All contributions are welcome.
 
