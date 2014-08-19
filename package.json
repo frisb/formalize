@@ -1,7 +1,7 @@
 {
   "name": "formalize",
   "description": "ActiveRecord ORM layer for FoundationDB",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "contributors": [
     {
       "name": "Ashley Brener",
@@ -28,7 +28,8 @@
   "dependencies": {
     "async": "^0.9.0",
     "bson": "^0.2.11",
-    "fdb": "^2.0.0"
+    "fdb": "^2.0.0",
+    "formality": "*"
   },
   "keywords": [
     "fdb",
