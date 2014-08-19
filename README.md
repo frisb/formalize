@@ -43,7 +43,7 @@ Formalize('MyDatabase', function (provider) {
     }
   }
 
-  provider.fdb.doTransaction(transaction, complete);
+  provider.db.doTransaction(transaction, complete);
 });
 ```
 
