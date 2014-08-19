@@ -10,7 +10,7 @@
   ],
   "main": "src/",
   "engines": {
-    "node": ">= 0.10.x"
+    "node": ">= 0.8.x"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -26,6 +26,7 @@
     "url": "https://github.com/frisb/formalize"
   },
   "dependencies": {
+    "async": "^0.9.0",
     "bson": "^0.2.11",
     "fdb": "^2.0.0"
   },

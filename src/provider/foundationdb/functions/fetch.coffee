@@ -6,6 +6,4 @@ module.exports = (ActiveRecord) ->
       callback = tr
       tr = null
 
-    fdb.future.create (futureCb) ->
-      query.execute(tr, futureCb)
-    , callback
+    query.execute(tr, callback)

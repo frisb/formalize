@@ -8,10 +8,11 @@ This module is still early alpha and work is in progress. All contributions are 
 
 ## Example Usage
 
+#### Transactional
 ``` js
 var Formalize = require('formalize');
 
-Formalize('MyDatabase', function (F) {
+Formalize('MyDatabase', function (provider) {
   var options = {
     schema: {
       firstName: 'f',
@@ -19,19 +20,63 @@ Formalize('MyDatabase', function (F) {
     }
   };
 
-  var Person = F.ActiveRecord('Person', options);
+  var Person = provider.ActiveRecord('Person', options);
 
   var p = new Person();
   p.firstName = 'Ashley';
   p.lastName = 'Brener';
 
-  p.save(function () {
-    Person.all(function (err, people) {
-      if (!err) {
-        console.log(people);
+  function transaction(tr, callback) {
+    p.save(tr, function (err) {
+      if (err) {
+        console.error(err);
+      }
+      else {
+        Person.all(tr, callback);
       }
     });
-  );
+  }
+
+  function complete(err, people) {
+    if (!err) {
+      console.log(people);
+    }
+  }
+
+  provider.fdb.doTransaction(transaction, complete);
+});
+```
+
+#### Non-Transactional
+``` js
+var Formalize = require('formalize');
+
+Formalize('MyDatabase', function (provider) {
+  var options = {
+    schema: {
+      firstName: 'f',
+      lastName: 'l'
+    }
+  };
+
+  var Person = provider.ActiveRecord('Person', options);
+
+  var p = new Person();
+  p.firstName = 'Ashley';
+  p.lastName = 'Brener';
+
+  p.save(function (err) {
+    if (err) {
+      console.error(err);
+    }
+    else {
+      Person.all(function (err, people) {
+        if (!err) {
+          console.log(people);
+        }
+      });
+    }
+  });
 });
 ```
 

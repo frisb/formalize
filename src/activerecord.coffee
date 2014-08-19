@@ -1,19 +1,12 @@
 Record = require('./record')
-Schema = require('./schema')
 
 module.exports = (db) ->
-  generateID = db.getIdGenerator()
-
   (typeName, options) ->
-    schema = new Schema(options.schema)
+    class ActiveRecord extends Record(getSchema(options))
 
-    class ActiveRecord extends Record
-      constructor: (@id) ->
-        super()
-        @id = generateID() if (!@id)
+    ActiveRecord::counters = options.counters
 
     ActiveRecord::typeName = typeName
-    ActiveRecord::schema = schema
 
     ActiveRecord.all = db.getAllFunction(ActiveRecord)
     ActiveRecord.fetch = db.getFetchFunction(ActiveRecord)
@@ -21,11 +14,13 @@ module.exports = (db) ->
     ActiveRecord::load = db.getLoadFunction(ActiveRecord)
     ActiveRecord::save = db.getSaveFunction(ActiveRecord)
 
-    applyProperty = (src) ->
-      Object.defineProperty ActiveRecord::, src,
-        get: -> @get(src)
-        set: (val) -> @set(src, val)
-
-    applyProperty(s) for s in schema.src
-
     ActiveRecord
+
+getSchema = (options) ->
+  if (options.schema instanceof Array)
+    schema = ['id'].concat(options.schema)
+  else
+    schema = { id: 'id' }
+    schema[k] = v for k, v of options.schema
+
+  schema

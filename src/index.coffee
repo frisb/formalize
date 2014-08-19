@@ -1,7 +1,7 @@
-databases = {}
+providers = {}
 
 factory = (dbType) ->
-  Database = require("./database/#{dbType}")
+  Provider = require("./provider/#{dbType}")
 
   (name, options, callback) ->
     if (typeof(options) is 'function')
@@ -10,14 +10,19 @@ factory = (dbType) ->
 
     dbKey = "#{dbType}:#{name}"
 
-    F = databases[dbKey]
+    provider = providers[dbKey]
 
-    if (!F)
-      F = new Database(name)
-      databases[dbKey] = F
+    if (!provider)
+      provider = new Provider(name)
+      providers[dbKey] = provider
 
-    F.on('connected', callback) if (callback)
+    provider.on('connected', callback) if (callback)
 
-    F.connect(options)
+    provider.connect(options)
+
+    if (!callback)
+      return provider
+    else
+      return
 
 module.exports = factory('foundationdb')

@@ -1,6 +1,6 @@
 {EventEmitter} = require('events')
 
-module.exports = class Database extends EventEmitter
+module.exports = class Provider extends EventEmitter
   constructor: (@name) ->
     @ActiveRecord = require('../activerecord')(@)
     @status = 'disconnected'
@@ -27,14 +27,29 @@ module.exports = class Database extends EventEmitter
   getIdGenerator: (ActiveRecord) ->
     throw new Error('not implemented')
 
-  getLoadFunction:(ActiveRecord) ->
+  getLoadFunction: (ActiveRecord) ->
     throw new Error('not implemented')
 
-  getSaveFunction:(ActiveRecord) ->
+  getSaveFunction: (ActiveRecord) ->
     throw new Error('not implemented')
 
-  getAllFunction:(ActiveRecord) ->
+  getConstructFunction: (ActiveRecord) ->
     throw new Error('not implemented')
 
-  getFetchFunction:(ActiveRecord) ->
+  getAllFunction: (ActiveRecord) ->
+    throw new Error('not implemented')
+
+  getFetchFunction: (ActiveRecord) ->
+    throw new Error('not implemented')
+
+  getIncrementCountFunction: (ActiveCounter) ->
+    throw new Error('not implemented')
+
+  getGetCountFunction: (ActiveCounter) ->
+    throw new Error('not implemented')
+
+  loadSchema: (ActiveRecord, callback) ->
+    throw new Error('not implemented')
+
+  saveSchema: (ActiveRecord, initializer, callback) ->
     throw new Error('not implemented')
