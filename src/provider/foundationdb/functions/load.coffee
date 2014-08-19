@@ -1,5 +1,5 @@
 fdb = require('fdb').apiVersion(200)
-utils = require('../utils')
+deepak = require('deepak')(fdb)
 
 module.exports = (ActiveRecord) ->
   ArrayQuery = require('../query/array')(@db)
@@ -18,7 +18,7 @@ module.exports = (ActiveRecord) ->
         for pair in arr
           key = provider.dir.records.unpack(pair.key)
           dest = key[1]
-          @data[dest] = utils.unpack(pair.value)
+          @data[dest] = deepak.unpack(pair.value)
 
         if (!err)
           @isLoaded = true

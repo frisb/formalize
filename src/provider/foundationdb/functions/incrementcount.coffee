@@ -1,5 +1,5 @@
 fdb = require('fdb').apiVersion(200)
-utils = require('../utils')
+deepak = require('deepak')(fdb)
 
 module.exports = (ActiveCounter) ->
   key = ActiveCounter::key
@@ -14,19 +14,19 @@ module.exports = (ActiveCounter) ->
       transaction = (tr, innerCallback) =>
         @id ?= generateID()
 
-        tr.set(dir.records.pack([@id]), utils.pack(''))
+        tr.set(dir.records.pack([@id]), deepak.pack(''))
 
         for d in schema.dest
           if (d isnt 'id')
             val = @data[d]
-            tr.set(dir.records.pack([@id, d]), utils.pack(val))
+            tr.set(dir.records.pack([@id, d]), deepak.pack(val))
 
         for counterName, counter of @counters
           key = []
 
           for prop in counter
             val = @data[prop]
-            key.push(utils.pack(val))
+            key.push(deepak.pack(val))
 
         inc = new Buffer(4)
         inc.writeUInt32LE(1, 0)

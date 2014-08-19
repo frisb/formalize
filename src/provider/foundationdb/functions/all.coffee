@@ -1,5 +1,5 @@
 fdb = require('fdb').apiVersion(200)
-utils = require('../utils')
+deepak = require('deepak')(fdb)
 
 getFunc = (ActiveRecord, provider, result, map) ->
   (arr, next) ->
@@ -23,7 +23,7 @@ getFunc = (ActiveRecord, provider, result, map) ->
 
       if (dest)
         # set value on ActiveRecord instance attribute
-        rec.data[dest] = utils.unpack(pair.value)
+        rec.data[dest] = deepak.unpack(pair.value)
         result[i] = rec
 
     next()

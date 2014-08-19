@@ -1,6 +1,6 @@
 async = require('async')
 fdb = require('fdb').apiVersion(200)
-utils = require('./utils')
+deepak = require('deepak')(fdb)
 
 Formality = require('formality')
 Provider = require('../')
@@ -13,7 +13,7 @@ module.exports = class FoundationDB extends Provider
     @fdb = fdb
     @dir = null
 
-    # @utils = require('./utils')
+    # @deepak = require('deepak')
     # @BatchQuery = require('./query/batch')
 
   init: (options, callback) ->
@@ -70,11 +70,11 @@ module.exports = class FoundationDB extends Provider
       if (err)
         console.error(err)
       else
-        callback(utils.unpack(val))
+        callback(deepak.unpack(val))
 
   saveSchema: (ActiveRecord, initializer, callback) ->
     key = @dir.settings.pack(['schema'])
-    @db.set(key, utils.pack(initializer))
+    @db.set(key, deepak.pack(initializer))
     callback(null)
 
   ensureDirectories:  (ActiveRecord, callback) =>

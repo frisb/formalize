@@ -1,5 +1,5 @@
 fdb = require('fdb').apiVersion(200)
-utils = require('../utils')
+deepak = require('deepak')(fdb)
 
 module.exports = (ActiveRecord) ->
   db = @db
@@ -9,13 +9,13 @@ module.exports = (ActiveRecord) ->
   save = (tr, provider, rec, callback) ->
     rec.id = generateID() if !rec.id
 
-    tr.set(provider.dir.records.pack([rec.id]), utils.pack(''))
+    tr.set(provider.dir.records.pack([rec.id]), deepak.pack(''))
 
     for d in rec.schema.dest
       if (d isnt 'id')
         val = rec.data[d]
 
-        tr.set(provider.dir.records.pack([rec.id, d]), utils.pack(val))
+        tr.set(provider.dir.records.pack([rec.id, d]), deepak.pack(val))
 
       rec.isNew = false
       rec.isLoaded = true
@@ -28,7 +28,7 @@ module.exports = (ActiveRecord) ->
         key = []
 
         for subkey in counter.key
-          key.push(utils.pack(rec.data[subkey]))
+          key.push(deepak.pack(rec.data[subkey]))
 
         packedKey = subspace.pack(key)
 
@@ -39,25 +39,25 @@ module.exports = (ActiveRecord) ->
 
         # tr.get packedKey, (err, v1) ->
         #   console.log(v1.readInt32LE(0))
-        #
-        #   func = (arr, next) ->
-        #     for pair in arr
-        #       key = subspace.unpack(pair.key)
-        #       val = pair.value.readInt32LE(0)
-        #
-        #       unpackedKey = []
-        #       unpackedKey.push(utils.unpack(subkey)) for subkey in key
-        #
-        #       console.log(unpackedKey)
-        #       console.log(val)
-        #
-        #     next()
-        #
-        #   BatchQuery = require('../query/batch')(db)
-        #
-        #   query = new BatchQuery(subspace, [new Buffer('', 'binary')], [utils.pack([ 64502, [ 2014, 8, 19, 14, 1 ], '27824455566' ])], func)
-        #
-        #   query.execute(tr, callback)
+
+          # func = (arr, next) ->
+          #   for pair in arr
+          #     key = subspace.unpack(pair.key)
+          #     val = pair.value.readInt32LE(0)
+          #
+          #     unpackedKey = []
+          #     unpackedKey.push(deepak.unpack(subkey)) for subkey in key
+          #
+          #     console.log(unpackedKey)
+          #     console.log(val)
+          #
+          #   next()
+          #
+          # BatchQuery = require('../query/batch')(db)
+          #
+          # query = new BatchQuery(subspace, [new Buffer('', 'binary')], [deepak.pack([ 64502, [ 2014, 8, 19, 14, 1 ], '27824455566' ])], func)
+          #
+          # query.execute(tr, callback)
 
     callback(null)
 
