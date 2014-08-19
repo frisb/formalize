@@ -28,6 +28,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "bson": "^0.2.11",
+    "deepak": "*",
     "fdb": "^2.0.0",
     "formality": "*"
   },

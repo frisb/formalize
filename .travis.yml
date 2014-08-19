@@ -4,3 +4,5 @@ node_js:
 before_install:
   - npm update -g npm
   - npm install -g grunt-cli
+  - wget --no-check-certificate https://foundationdb.com/downloads/I_accept_the_FoundationDB_Community_License_Agreement/2.0.8/foundationdb-clients_2.0.8-1_amd64.deb
+  - sudo dpkg -i foundationdb-clients_2.0.8-1_amd64.deb
