@@ -21,7 +21,7 @@ module.exports = class FoundationDB extends Provider
 
     process.nextTick ->
       callback(db)
-      
+
   getIdGenerator: require("./functions/idgenerator")
   getLoadFunction: require("./functions/load")
   getSaveFunction: require("./functions/save")
@@ -81,7 +81,12 @@ module.exports = class FoundationDB extends Provider
     if (@dir isnt null)
       callback(@dir)
     else
-      paths = ['settings', 'records', 'indexes', 'counters']
+      paths = [
+        'settings'
+        'records'
+        'indexes'
+        'counters'
+      ]
 
       createDirectory = (path, cb)  =>
         fdb.directory.createOrOpen(@db, [@name, ActiveRecord::typeName, path], {}, cb)
