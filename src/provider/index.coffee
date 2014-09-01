@@ -1,10 +1,12 @@
+ActiveRecordFactory = require('../activerecord/factory')
 {EventEmitter} = require('events')
 
 module.exports = class Provider extends EventEmitter
   constructor: (@name) ->
-    @ActiveRecord = require('../activerecord')(@)
     @status = 'disconnected'
     @db = null
+
+    @ActiveRecord = ActiveRecordFactory(@)
 
   connect: (options) ->
     switch @status
@@ -15,6 +17,7 @@ module.exports = class Provider extends EventEmitter
         callback = (db) =>
           @status = 'connected'
           @db = db
+
           @emit('connected', @)
 
         @init(options, callback)
@@ -22,34 +25,4 @@ module.exports = class Provider extends EventEmitter
     @
 
   init: (options, callback) ->
-    throw new Error('not implemented')
-
-  getIdGenerator: (ActiveRecord) ->
-    throw new Error('not implemented')
-
-  getLoadFunction: (ActiveRecord) ->
-    throw new Error('not implemented')
-
-  getSaveFunction: (ActiveRecord) ->
-    throw new Error('not implemented')
-
-  getConstructFunction: (ActiveRecord) ->
-    throw new Error('not implemented')
-
-  getAllFunction: (ActiveRecord) ->
-    throw new Error('not implemented')
-
-  getFetchFunction: (ActiveRecord) ->
-    throw new Error('not implemented')
-
-  getIncrementCountFunction: (ActiveCounter) ->
-    throw new Error('not implemented')
-
-  getGetCountFunction: (ActiveCounter) ->
-    throw new Error('not implemented')
-
-  loadSchema: (ActiveRecord, callback) ->
-    throw new Error('not implemented')
-
-  saveSchema: (ActiveRecord, initializer, callback) ->
     throw new Error('not implemented')

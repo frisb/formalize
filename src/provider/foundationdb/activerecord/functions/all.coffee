@@ -33,31 +33,29 @@ reset = (rec) ->
   rec.isLoaded = true
   rec.changed = []
 
-module.exports = (ActiveRecord) ->
+module.exports = (tr, callback) ->
+  if (typeof(tr) is 'function')
+    callback = tr
+    tr = null
+
   BatchQuery = require('../query/batch')(@db)
-  provide = @getProviderFunction(ActiveRecord)
+  ActiveRecord = @
+  provider = ActiveRecord::provider
 
-  (tr, callback) ->
-    if (typeof(tr) is 'function')
-      callback = tr
-      tr = null
+  result = []
+  map = Object.create(null)
 
-    provideCallback = (provider) =>
-      result = []
-      map = Object.create(null)
-      func = getFunc(ActiveRecord, provider, result, map)
+  func = getFunc(ActiveRecord, provider, result, map)
 
-      query = new BatchQuery(provider.dir.records, [''], ['\\xff'], func)
+  query = new BatchQuery(provider.dir.records, func)
 
-      fdb.future.create (futureCb) ->
-        complete = (err, res) ->
-          map = null
+  fdb.future.create (futureCb) ->
+    complete = (err, res) ->
+      map = null
 
-          reset(rec) for rec in result
+      reset(rec) for rec in result
 
-          futureCb(err, result)
+      futureCb(err, result)
 
-        query.execute(tr, complete)
-      , callback
-
-    provide(provideCallback)
+    query.execute(tr, complete)
+  , callback

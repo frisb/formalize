@@ -1,7 +1,7 @@
-Formality = require('formality')
+ActiveSchema = require('./activeschema')
 
-module.exports = (schema) ->
-  class Record extends Formality(schema)
+module.exports = (options) ->
+  class Record extends ActiveSchema(options)
     constructor: (id) ->
       @changed = []
       @isLoaded = false

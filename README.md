@@ -20,30 +20,30 @@ Formalize('MyDatabase', function (provider) {
     }
   };
 
-  var Person = provider.ActiveRecord('Person', options);
+  provider.ActiveRecord('People', options, functions (Person) {
+    var p = new Person();
+    p.firstName = 'Ashley';
+    p.lastName = 'Brener';
 
-  var p = new Person();
-  p.firstName = 'Ashley';
-  p.lastName = 'Brener';
-
-  function transaction(tr, callback) {
-    p.save(tr, function (err) {
-      if (err) {
-        console.error(err);
-      }
-      else {
-        Person.all(tr, callback);
-      }
-    });
-  }
-
-  function complete(err, people) {
-    if (!err) {
-      console.log(people);
+    function transaction(tr, callback) {
+      p.save(tr, function (err) {
+        if (err) {
+          console.error(err);
+        }
+        else {
+          Person.all(tr, callback);
+        }
+      });
     }
-  }
 
-  provider.db.doTransaction(transaction, complete);
+    function complete(err, people) {
+      if (!err) {
+        console.log(people);
+      }
+    }
+
+    provider.db.doTransaction(transaction, complete);
+  });
 });
 ```
 
@@ -59,23 +59,23 @@ Formalize('MyDatabase', function (provider) {
     }
   };
 
-  var Person = provider.ActiveRecord('Person', options);
+  provider.ActiveRecord('People', options, functions (Person) {
+    var p = new Person();
+    p.firstName = 'Ashley';
+    p.lastName = 'Brener';
 
-  var p = new Person();
-  p.firstName = 'Ashley';
-  p.lastName = 'Brener';
-
-  p.save(function (err) {
-    if (err) {
-      console.error(err);
-    }
-    else {
-      Person.all(function (err, people) {
-        if (!err) {
-          console.log(people);
-        }
-      });
-    }
+    p.save(function (err) {
+      if (err) {
+        console.error(err);
+      }
+      else {
+        Person.all(function (err, people) {
+          if (!err) {
+            console.log(people);
+          }
+        });
+      }
+    });
   });
 });
 ```
