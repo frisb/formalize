@@ -1,7 +1,7 @@
 {
   "name": "formalize",
   "description": "Node.js ActiveRecord ORM layer for FoundationDB",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "contributors": [
     {
       "name": "Ashley Brener",

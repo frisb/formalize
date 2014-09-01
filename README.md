@@ -20,7 +20,7 @@ Formalize('MyDatabase', function (provider) {
     }
   };
 
-  provider.ActiveRecord('People', options, functions (Person) {
+  provider.ActiveRecord('People', options, function (Person) {
     var p = new Person();
     p.firstName = 'Ashley';
     p.lastName = 'Brener';
