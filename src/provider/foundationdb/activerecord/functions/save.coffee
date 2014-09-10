@@ -8,7 +8,8 @@ save = (tr, rec, callback) ->
     if (d isnt 'id')
       val = rec.data[d]
 
-      tr.set(rec.provider.dir.records.pack([rec.id, d]), deepak.pack(val))
+      if (typeof(val) isnt 'undefined')
+        tr.set(rec.provider.dir.records.pack([rec.id, d]), deepak.pack(val))
 
     rec.isNew = false
     rec.isLoaded = true
