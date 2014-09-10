@@ -1,32 +1,42 @@
 fdb = require('fdb').apiVersion(200)
 
-func = (db, query, callback) =>
-  if (!query.key1)
-    prefix = query.subspace.pack([])
-    iterator = db.getRangeStartsWith(prefix, query.getOptions())
-  else
-    r0 = query.subspace.range(query.key0)
-    r1 = query.subspace.range(query.key1)
-
-    iterator = db.getRange(r0.begin, r1.end, query.getOptions())
-
+func = (tr, query, callback) =>
+  iterator = query.getIterator(tr)
   query.iterate(iterator, callback)
 
-module.exports = (db) ->
-  class Query
-    constructor: (@subspace, @key0, @key1) ->
-      @key0 = [] if (!@key0)
+transactionalQuery = fdb.transactional(func)
 
-    iterate: (iterator, callback) ->
-      throw new Error('not implemented')
+module.exports = class Query
+  constructor: (@db, @subspace, @key0, @key1) ->
+    @key0 = [] if (!@key0)
 
-    getOptions: ->
-      throw new Error('not implemented')
+  getIterator: (tr) ->
+    db = tr || @db
 
-    execute: (tr, callback) ->
-      if (typeof(tr) is 'function')
-        callback = tr
-        tr = null
+    if (!@key1)
+      prefix = @subspace.pack([])
+      db.getRangeStartsWith(prefix, @getOptions())
+    else
+      r0 = @subspace.range(@key0)
+      r1 = @subspace.range(@key1)
 
-      transactionalQuery = fdb.transactional(func)
-      transactionalQuery(tr || db, @, callback)
+      db.getRange(r0.begin, r1.end, @getOptions())
+
+  iterate: (iterator, callback) ->
+    throw new Error('not implemented')
+
+  getOptions: ->
+    throw new Error('not implemented')
+
+  execute: (tr, callback) ->
+    if (typeof(tr) is 'function')
+      callback = tr
+      tr = null
+
+    if (tr is null)
+      fdb.future.create (futureCb) =>
+        innerFuture = @getIterator()
+        innerFuture(futureCb)
+      , callback
+    else
+      transactionalQuery(tr || @db, @, callback)

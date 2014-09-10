@@ -1,14 +1,14 @@
 fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
+ArrayQuery = require('../query/array')
+
 module.exports = (tr, callback) ->
   if (typeof(tr) is 'function')
     callback = tr
     tr = null
 
-  ArrayQuery = require('../query/array')(@provider.db)
-
-  query = new ArrayQuery(@provider.dir.records, [@id], [@id])
+  query = new ArrayQuery(@provider.db, @provider.dir.records, [@id], [@id])
 
   queryCallback = (err, arr) =>
     for pair in arr

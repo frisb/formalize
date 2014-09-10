@@ -3,10 +3,10 @@ Query = require('./')
 
 options =
   limit: null
-  streamingMode: fdb.streamingMode.wantAll
+  streamingMode: fdb.streamingMode.iterator
 
-module.exports = class ArrayQuery extends Query
+module.exports = class EachQuery extends Query
   getOptions: -> options
 
   iterate: (iterator, callback) ->
-    iterator.toArray(callback)
+    iterator.forEach(callback)

@@ -1,6 +1,6 @@
 {
   "name": "formalize",
-  "description": "Node.js ActiveRecord ORM layer for FoundationDB",
+  "description": "Node.js NoSQL ActiveRecord ORM layer for FoundationDB",
   "version": "0.1.15",
   "contributors": [
     {
@@ -8,7 +8,7 @@
       "url": "http://frisB.com"
     }
   ],
-  "main": "lib/",
+  "main": "src/",
   "engines": {
     "node": ">= 0.8.x"
   },
@@ -30,7 +30,8 @@
     "bson": "^0.2.11",
     "deepak": "*",
     "fdb": "^2.0.0",
-    "formality": "*"
+    "formality": "*",
+    "underscore": "^1.7.0"
   },
   "keywords": [
     "fdb",

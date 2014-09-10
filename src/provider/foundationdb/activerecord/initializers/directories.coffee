@@ -18,7 +18,7 @@ module.exports = (ActiveRecord, callback) ->
     typeName = ActiveRecord::typeName
 
     createDirectory = (path, cb)  =>
-      fdb.directory.createOrOpen(provider.db, [provider.name, typeName, path], {}, cb)
+      fdb.directory.createOrOpen(provider.db, [provider.dbName, typeName, path], {}, cb)
 
     mapCallback = (err, results) ->
       if (err)

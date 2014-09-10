@@ -1,7 +1,7 @@
-ActiveSchema = require('./activeschema')
+ActiveSchema = require('./schema')
 
 module.exports = (options) ->
-  class Record extends ActiveSchema(options)
+  class BaseRecord extends ActiveSchema(options)
     constructor: (id) ->
       @changed = []
       @isLoaded = false

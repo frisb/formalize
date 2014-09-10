@@ -50,5 +50,4 @@ module.exports = (ActiveRecord, callback) ->
     else
       callback()
 
-  # async.each(['schema', 'counters'], initSetting, eachCallback)
-  async.each(['schema'], initSetting, eachCallback)
+  async.each(['schema', 'indexes', 'counters'], initSetting, eachCallback)
