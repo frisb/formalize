@@ -2,7 +2,7 @@ fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
 save = (tr, rec, callback) ->
-  tr.set(rec.provider.dir.records.pack([rec.id]), deepak.pack(''))
+  # tr.set(rec.provider.dir.records.pack([rec.id]), deepak.pack(''))
 
   for d in rec.schema.dest
     if (d isnt 'id')

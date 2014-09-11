@@ -7,7 +7,7 @@ module.exports = (options) ->
       @isLoaded = false
       @isNew = true
 
-      @id = id if id
+      @id = id if typeof id isnt 'undefined'
 
     set: (key, val) ->
       dest = super(key, val)

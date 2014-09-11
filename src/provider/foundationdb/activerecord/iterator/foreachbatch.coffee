@@ -3,40 +3,61 @@ deepak = require('deepak')(fdb)
 
 BatchQuery = require('../query/batch')
 
-getFunc = (ActiveRecord, state, callback) ->
-  subspace = ActiveRecord::provider.dir.records
-
+getFunc = (ActiveRecord, subspace, state, callback) ->
   (arr, next) ->
+    key = null
+
     # iterate every key-value pair returned
     process.nextTick ->
       for pair in arr
         key = subspace.unpack(pair.key)
-        id = key[0]
-        dest = key[1]
 
-        if (state.fluxRecord isnt null)
-          rec = state.fluxRecord
 
-          if (state.fluxRecord.id isnt id)
-            reset(state.fluxRecord)
-            state.pendingBatch.push(rec)
 
-            # create new ActiveRecord instance
-            rec = new ActiveRecord(id)
+        if (state.indexKey)
+          rec = new ActiveRecord(null)
+
+          # temp = []
+
+          for subkey, i in state.indexKey
+            val = deepak.unpack(key[i])
+            # temp.push(val)
+            if (typeof(val) isnt 'undefined')
+              # set value on ActiveRecord instance attribute
+              rec.data[subkey] = val
+
+          # console.log(temp)
+
+          reset(rec)
+          state.pendingBatch.push(rec)
         else
-          rec = new ActiveRecord(id)
+          id = key[0]
+          dest = key[1]
 
-        if (dest)
-          val = deepak.unpack(pair.value)
-          # console.log(key, val)
+          if (state.fluxRecord isnt null)
+            rec = state.fluxRecord
 
-          if (typeof(val) isnt 'undefined')
-            # set value on ActiveRecord instance attribute
-            rec.data[dest] = val
+            if (state.fluxRecord.id isnt id)
+              reset(state.fluxRecord)
+              state.pendingBatch.push(rec)
+
+              # create new ActiveRecord instance
+              rec = new ActiveRecord(id)
+          else
+            rec = new ActiveRecord(id)
+
+          if (dest)
+            val = deepak.unpack(pair.value)
+            # console.log(key, val)
+
+            if (typeof(val) isnt 'undefined')
+              # set value on ActiveRecord instance attribute
+              rec.data[dest] = val
 
         state.fluxRecord = rec
 
       if (state.pendingBatch.length > 0)
+        state.query.marker = key
         callback(null, state.pendingBatch)
         state.pendingBatch = []
 
@@ -53,14 +74,20 @@ module.exports =  (tr, callback) ->
     tr = null
 
   provider = @ActiveRecord::provider
-
   state =
     pendingBatch: []
     fluxRecord: null
 
-  func = getFunc(@ActiveRecord, state, callback)
+  if (@indexName isnt null)
+    subspace = provider.dir.indexes[@indexName]
+    state.indexKey = @ActiveRecord::indexes[@indexName].key
+  else
+    subspace = provider.dir.records
 
-  query = new BatchQuery(provider.db, provider.dir.records, @key0, @key1, func)
+  func = getFunc(@ActiveRecord, subspace, state, callback)
+  query = new BatchQuery(provider.db, subspace, @key0, @key1, func)
+
+  state.query = query
 
   complete = (err, res) ->
     if (err)

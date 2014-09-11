@@ -3,8 +3,10 @@ deepak = require('deepak')(fdb)
 
 add = (tr, rec, mechanism, value, callback) ->
   for item in rec[mechanism].items
+    directory = rec.provider.dir[mechanism][item.name]
+
     if (!item.filter || item.filter(rec))
-      k = [item.name]
+      k = []
 
       for subkey in item.key
         if (typeof(subkey) is 'function')
@@ -14,7 +16,7 @@ add = (tr, rec, mechanism, value, callback) ->
 
         k.push(deepak.pack(data))
 
-      packedKey = rec.provider.dir[mechanism].pack(k)
+      packedKey = directory.pack(k)
 
       if (mechanism is 'counters')
         tr.add(packedKey, value)

@@ -45,8 +45,8 @@ module.exports = (options) ->
     count: require('./functions/count')
 
     @fetchRaw = (subspace, key0, key1) -> new Query(@provider.db, subspace, key0, key1)
-    @fetch = (key0, key1) -> new Iterator(@, key0, key1)
-    @all = -> new Iterator(@)
+    @fetch = (index, key0, key1) -> new Iterator(@, index, key0, key1)
+    @all = -> new Iterator(@, 'pk', [], ['\xff'])
 
     @init = (callback) ->
       initDirectories @, =>

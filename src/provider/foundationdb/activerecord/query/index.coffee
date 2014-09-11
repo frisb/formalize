@@ -9,15 +9,16 @@ transactionalQuery = fdb.transactional(func)
 module.exports = class Query
   constructor: (@db, @subspace, @key0, @key1) ->
     @key0 = [] if (!@key0)
+    @marker = null
 
   getIterator: (tr) ->
     db = tr || @db
 
     if (!@key1)
-      prefix = @subspace.pack([])
+      prefix = @subspace.pack(@key0 || [])
       db.getRangeStartsWith(prefix, @getOptions())
     else
-      r0 = @subspace.range(@key0)
+      r0 = @subspace.range(@marker || @key0)
       r1 = @subspace.range(@key1)
 
       db.getRange(r0.begin, r1.end, @getOptions())
@@ -33,10 +34,10 @@ module.exports = class Query
       callback = tr
       tr = null
 
-    if (tr is null)
-      fdb.future.create (futureCb) =>
-        innerFuture = @getIterator()
-        innerFuture(futureCb)
-      , callback
-    else
-      transactionalQuery(tr || @db, @, callback)
+    # if (tr is null)
+    #   fdb.future.create (futureCb) =>
+    #     innerFuture = @getIterator()
+    #     innerFuture(futureCb)
+    #   , callback
+    # else
+    transactionalQuery(tr || @db, @, callback)
