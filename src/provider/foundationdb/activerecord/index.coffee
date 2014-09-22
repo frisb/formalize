@@ -7,7 +7,7 @@ ActiveRecord = require('../../../active/record')
 initDirectories = require('./initializers/directories')
 initSettings = require('./initializers/settings')
 
-Iterator = require('./iterator')
+#Iterator = require('./iterator')
 Query = require('./query')
 
 Adder = require('./functions/add')
@@ -44,9 +44,17 @@ module.exports = (options) ->
     add: add
     count: require('./functions/count')
 
-    @fetchRaw = (subspace, key0, key1) -> new Query(@provider.db, subspace, key0, key1)
-    @fetch = (index, key0, key1) -> new Iterator(@, index, key0, key1)
-    @all = -> new Iterator(@, 'pk', [], ['\xff'])
+    #setValue: (key, val) ->
+      #super(key, val)
+
+    #@fetchRaw = (subspace, key0, key1) -> new Iterator(@provider.db, subspace, key0, key1)
+    @fetch = (index, key0, key1) -> new Query(@, index, key0, key1)
+    @all = -> new Query(@, 'pk', [], ['\xff'])
+    @reindex = (name) -> 
+      @all().forEachBatch (err, arr) ->
+        for rec in arr
+          if (rec.C is 64502)
+            console.log(rec.data)
 
     @init = (callback) ->
       initDirectories @, =>

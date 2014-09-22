@@ -1,7 +1,7 @@
 fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
-BatchQuery = require('../query/batch')
+BatchIterator = require('../iterator/batch')
 
 getFunc = (ActiveRecord, subspace, state, callback) ->
   (arr, next) ->
@@ -12,23 +12,24 @@ getFunc = (ActiveRecord, subspace, state, callback) ->
       for pair in arr
         key = subspace.unpack(pair.key)
 
-
+        #console.log(deepak.unpackArrayValues(key))
 
         if (state.indexKey)
           rec = new ActiveRecord(null)
 
           # temp = []
-
+          
           for subkey, i in state.indexKey
-            val = deepak.unpack(key[i])
-            # temp.push(val)
-            if (typeof(val) isnt 'undefined')
-              # set value on ActiveRecord instance attribute
-              rec.data[subkey] = val
+            if (typeof(subkey) isnt 'function')
+              val = deepak.unpackValue(key[i])
+              # temp.push(val)
+              if (typeof(val) isnt 'undefined')
+                # set value on ActiveRecord instance attribute
+                rec.data(subkey, val)
 
           # console.log(temp)
 
-          reset(rec)
+          rec.reset(true)
           state.pendingBatch.push(rec)
         else
           id = key[0]
@@ -38,7 +39,7 @@ getFunc = (ActiveRecord, subspace, state, callback) ->
             rec = state.fluxRecord
 
             if (state.fluxRecord.id isnt id)
-              reset(state.fluxRecord)
+              state.fluxRecord.reset(true)
               state.pendingBatch.push(rec)
 
               # create new ActiveRecord instance
@@ -47,26 +48,21 @@ getFunc = (ActiveRecord, subspace, state, callback) ->
             rec = new ActiveRecord(id)
 
           if (dest)
-            val = deepak.unpack(pair.value)
+            val = deepak.unpackValue(pair.value)
             # console.log(key, val)
 
             if (typeof(val) isnt 'undefined')
               # set value on ActiveRecord instance attribute
-              rec.data[dest] = val
+              rec.data(dest, val)
 
         state.fluxRecord = rec
 
       if (state.pendingBatch.length > 0)
-        state.query.marker = key
+        state.iterator.marker = key
         callback(null, state.pendingBatch)
         state.pendingBatch = []
 
     next()
-
-reset = (rec) ->
-  rec.isNew = false
-  rec.isLoaded = true
-  rec.changed = []
 
 module.exports =  (tr, callback) ->
   if (typeof(tr) is 'function')
@@ -85,18 +81,19 @@ module.exports =  (tr, callback) ->
     subspace = provider.dir.records
 
   func = getFunc(@ActiveRecord, subspace, state, callback)
-  query = new BatchQuery(provider.db, subspace, @key0, @key1, func)
+  iterator = new BatchIterator(provider, subspace, @key0, @key1, func)
 
-  state.query = query
+  state.iterator = iterator
 
   complete = (err, res) ->
     if (err)
+      console.log(err)
       callback(err)
     else
       if (state.fluxRecord isnt null)
-        reset(state.fluxRecord)
+        state.fluxRecord.reset(true)
         callback(null, [state.fluxRecord])
 
       callback(null, null)
 
-  query.execute(tr, complete)
+  iterator.execute(tr, complete)

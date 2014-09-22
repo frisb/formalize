@@ -1,11 +1,11 @@
 fdb = require('fdb').apiVersion(200)
-Query = require('./')
+Iterator = require('./')
 
 options =
   limit: null
   streamingMode: fdb.streamingMode.iterator
 
-module.exports = class BatchQuery extends Query
+module.exports = class BatchIterator extends Iterator
   constructor: (db, subspace, key0, key1, @func) ->
     if (typeof(key0) is 'function')
       @func = key0

@@ -4,12 +4,7 @@ deepak = require('deepak')(fdb)
 count = (tr, counterName, key, callback) ->
   counter = activeCounter[counterName]
 
-  k = []
-
-  for subkey in key
-    k.push(deepak.pack(subkey))
-
-  packedKey = counter.subspace.pack(k)
+  packedKey = counter.subspace.pack(deepak.packArrayValues(key))
 
   tr.get packedKey, (err, val) ->
     callback(err, val.readInt32LE(0))

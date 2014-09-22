@@ -1,43 +1,35 @@
 fdb = require('fdb').apiVersion(200)
-
-func = (tr, query, callback) =>
-  iterator = query.getIterator(tr)
-  query.iterate(iterator, callback)
-
-transactionalQuery = fdb.transactional(func)
+deepak = require('deepak')(fdb)
 
 module.exports = class Query
-  constructor: (@db, @subspace, @key0, @key1) ->
-    @key0 = [] if (!@key0)
-    @marker = null
+  constructor: (@ActiveRecord, @indexName, @key0, @key1) ->
+    debug = @ActiveRecord::provider.debug
+    
+    if (@indexName instanceof Array)
+      # does not have an index name
 
-  getIterator: (tr) ->
-    db = tr || @db
+      if (@key0 instanceof Array)
+        # has an upper limit
+        @key1 = @key0
 
-    if (!@key1)
-      prefix = @subspace.pack(@key0 || [])
-      db.getRangeStartsWith(prefix, @getOptions())
+      @key0 = @indexName
+      @indexName = null
+      
+      debug.buffer('key0', @key0)
     else
-      r0 = @subspace.range(@marker || @key0)
-      r1 = @subspace.range(@key1)
+      # has an index name
+      
+      debug.buffer('indexName', @indexName)
+      debug.buffer('indexKey', @ActiveRecord::indexes[@indexName].key)
+      
+      debug.buffer('key0', @key0)
+      debug.buffer('key1', @key1)
 
-      db.getRange(r0.begin, r1.end, @getOptions())
+      @key0 = deepak.packArrayValues(@key0) if @key0
+      @key1 = deepak.packArrayValues(@key1) if @key1
+      
+    debug.log('Query', @ActiveRecord::typeName)
 
-  iterate: (iterator, callback) ->
-    throw new Error('not implemented')
-
-  getOptions: ->
-    throw new Error('not implemented')
-
-  execute: (tr, callback) ->
-    if (typeof(tr) is 'function')
-      callback = tr
-      tr = null
-
-    # if (tr is null)
-    #   fdb.future.create (futureCb) =>
-    #     innerFuture = @getIterator()
-    #     innerFuture(futureCb)
-    #   , callback
-    # else
-    transactionalQuery(tr || @db, @, callback)
+  toArray: require('./toarray')
+  forEachBatch: require('./foreachbatch')
+  forEach: require('./foreach')

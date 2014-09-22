@@ -3,12 +3,16 @@ ActiveSchema = require('./schema')
 module.exports = (options) ->
   class BaseRecord extends ActiveSchema(options)
     constructor: (id) ->
-      @changed = []
-      @isLoaded = false
-      @isNew = true
-
+      super()
+      
+      @reset()
       @id = id if typeof id isnt 'undefined'
 
-    set: (key, val) ->
+    reset: (isLoaded) ->
+      @isLoaded = isLoaded
+      @isNew = !isLoaded
+      @isChanged = false
+
+    setValue: (key, val) ->
       dest = super(key, val)
-      @changed.push(dest)
+      @isChanged = true

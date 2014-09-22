@@ -10,11 +10,13 @@ add = (tr, rec, mechanism, value, callback) ->
 
       for subkey in item.key
         if (typeof(subkey) is 'function')
+          # generate value from function
           data = subkey(rec)
         else
-          data = rec.data[subkey]
+          # get value from record
+          data = rec.data(subkey)
 
-        k.push(deepak.pack(data))
+        k.push(deepak.packValue(data))
 
       packedKey = directory.pack(k)
 

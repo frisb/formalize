@@ -1,12 +1,7 @@
 fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
-ArrayQuery = require('../query/array')
-
-reset = (rec) ->
-  rec.isNew = false
-  rec.isLoaded = true
-  rec.changed = []
+ArrayIterator = require('../iterator/array')
 
 module.exports =  (tr, callback) ->
   if (typeof(tr) is 'function')
@@ -15,7 +10,7 @@ module.exports =  (tr, callback) ->
 
   provider = @ActiveRecord::provider
 
-  query = new ArrayQuery(provider.db, provider.dir.records, @key0, @key1)
+  iterator = new ArrayIterator(provider, provider.dir.records, @key0, @key1)
 
   complete = (err, arr) ->
     result = []
@@ -41,12 +36,12 @@ module.exports =  (tr, callback) ->
 
       if (dest)
         # set value on ActiveRecord instance attribute
-        rec.data[dest] = deepak.unpack(pair.value)
+        rec.data(dest, deepak.unpack(pair.value))
         result[i] = rec
 
     map = null
-    reset(rec) for rec in result
+    rec.reset(true) for rec in result
 
     callback(err, result)
 
-  query.execute(tr, complete)
+  iterator.execute(tr, complete)

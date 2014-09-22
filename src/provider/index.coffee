@@ -1,6 +1,7 @@
 _ = require('underscore')
 async = require('async')
 ActiveFactory = require('../active/factory')
+Debug = require('./debug')
 {EventEmitter} = require('events')
 path = require('path')
 
@@ -32,6 +33,9 @@ module.exports = class Provider extends EventEmitter
 
   _configure: (callback) ->
     @config = getConfig(@dbType)
+    
+    @debug = new Debug(@config.debug)
+    @force = @config.force || false
 
     activeRecordConfigs = _.pairs(@config[@dbName])
 

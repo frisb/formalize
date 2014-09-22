@@ -1,11 +1,11 @@
 fdb = require('fdb').apiVersion(200)
-Query = require('./')
+Iterator = require('./')
 
 options =
   limit: null
   streamingMode: fdb.streamingMode.wantAll
 
-module.exports = class ArrayQuery extends Query
+module.exports = class ArrayIterator extends Iterator
   getOptions: -> options
 
   iterate: (iterator, callback) ->

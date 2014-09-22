@@ -1,7 +1,7 @@
 fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
-EachQuery = require('../query/each')
+EachIterator = require('../iterator/each')
 
 getFunc = (ActiveRecord, provider, fluxRecord, callback) ->
   (pair, next) ->
@@ -13,7 +13,7 @@ getFunc = (ActiveRecord, provider, fluxRecord, callback) ->
       rec = fluxRecord
 
       if (fluxRecord.id isnt id)
-        # reset(fluxRecord)
+        # fluxRecord.reset(true)
         callback(fluxRecord)
 
         # create new ActiveRecord instance in dictionary
@@ -33,11 +33,6 @@ getFunc = (ActiveRecord, provider, fluxRecord, callback) ->
 
     next()
 
-reset = (rec) ->
-  rec.isNew = false
-  rec.isLoaded = true
-  rec.changed = []
-
 module.exports =  (tr, callback) ->
   if (typeof(tr) is 'function')
     callback = tr
@@ -48,6 +43,6 @@ module.exports =  (tr, callback) ->
   fluxRecord = null
 
   func = getFunc(@ActiveRecord, provider, fluxRecord, callback)
-  query = new EachQuery(provider.db, provider.dir.records, @key0, @key1)
+  iterator = new EachIterator(provider, provider.dir.records, @key0, @key1)
 
-  query.execute(tr, func)
+  iterator.execute(tr, func)

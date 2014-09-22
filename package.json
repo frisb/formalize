@@ -8,7 +8,7 @@
       "url": "http://frisB.com"
     }
   ],
-  "main": "lib/",
+  "main": "src/",
   "engines": {
     "node": ">= 0.8.x"
   },
@@ -28,10 +28,12 @@
   "dependencies": {
     "async": "^0.9.0",
     "bson": "^0.2.11",
-    "deepak": "*",
+    "deepak": "^0.0.7",
     "fdb": "^2.0.0",
     "formality": "*",
-    "underscore": "^1.7.0"
+    "surreal": "^0.1.0",
+    "underscore": "^1.7.0",
+    "writeln": "^0.0.2"
   },
   "keywords": [
     "fdb",
