@@ -9,3 +9,8 @@ module.exports = class FoundationDB extends Provider
 
     db = fdb.open(clusterFile)
     process.nextTick -> callback(db)
+    
+  _configure: (callback) ->
+    super(callback)
+    
+    @partition = @config.partition || false

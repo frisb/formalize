@@ -71,7 +71,7 @@ module.exports = (ActiveRecord, callback) ->
           throw new Error(message)
           
       else if (@value)
-        debug.buffer(@name, 'initializer not loaded from db')
+        @debug.buffer(@name, 'initializer not loaded from db')
         
         @save(ActiveRecord, @value.initializer)
       else

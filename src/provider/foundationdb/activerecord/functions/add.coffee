@@ -5,27 +5,40 @@ add = (tr, rec, mechanism, value, callback) ->
   for item in rec[mechanism].items
     directory = rec.provider.dir[mechanism][item.name]
 
-    if (!item.filter || item.filter(rec))
-      k = []
-
-      for subkey in item.key
-        if (typeof(subkey) is 'function')
-          # generate value from function
-          data = subkey(rec)
+    if (item.filter)
+      isSuccess = item.filter(tr, rec)
+      
+      if (isSuccess)
+        if (typeof(isSuccess) is 'function')
+          # returns a future
+          future = isSuccess
+          
+          future (isSuccess) ->
+            performAddition(rec, item.key) if isSuccess
         else
-          # get value from record
-          data = rec.data(subkey)
-
-        k.push(deepak.packValue(data))
-
-      packedKey = directory.pack(k)
-
-      if (mechanism is 'counters')
-        tr.add(packedKey, value)
-      else
-        tr.set(packedKey, value)
+          performAddition(rec, item.key)
 
   callback(null)
+  
+performAddition = (tr, rec, key) ->
+  k = []
+
+  for subkey in key
+    if (typeof(subkey) is 'function')
+      # generate value from function
+      data = subkey(rec)
+    else
+      # get value from record
+      data = rec.data(subkey)
+
+    k.push(deepak.packValue(data))
+
+  packedKey = directory.pack(k)
+
+  if (mechanism is 'counters')
+    tr.add(packedKey, value)
+  else
+    tr.set(packedKey, value)
 
 transactionalAdd = fdb.transactional(add)
 

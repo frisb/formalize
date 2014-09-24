@@ -36,6 +36,15 @@ module.exports = (options) ->
   class FoundationDB_ActiveRecord extends ActiveRecord(options)
     constructor: (id) ->
       id = new ObjectID().toHexString() if (typeof(id) is 'undefined')
+      
+      if (typeof(@provider.partition) isnt 'undefined')
+        @partition = @provider.partition
+      else 
+        @partition = options.partition
+        
+      @keySize = 0
+      @valueSize = 0
+      
       super(id)
 
     load: require('./functions/load')
@@ -44,12 +53,28 @@ module.exports = (options) ->
     add: add
     count: require('./functions/count')
 
-    #setValue: (key, val) ->
-      #super(key, val)
+    data: (dest, val) ->
+      if (dest && !val)
+        val = super(dest)
+        
+        if (val instanceof Buffer)
+          val = deepak.unpackValue(val)
+          @data(dest, val)
+          
+        return val
+        
+      return super(dest, val)
+      
 
     #@fetchRaw = (subspace, key0, key1) -> new Iterator(@provider.db, subspace, key0, key1)
-    @fetch = (index, key0, key1) -> new Query(@, index, key0, key1)
-    @all = -> new Query(@, 'pk', [], ['\xff'])
+    @fetch = (options) -> new Query(@, options)
+    @all = -> 
+      options = 
+        index: 'pk'
+        key0: [] 
+        key1: ['\xff']
+      
+      new Query(@, options)
     @reindex = (name) -> 
       @all().forEachBatch (err, arr) ->
         for rec in arr
