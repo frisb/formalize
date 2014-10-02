@@ -1,25 +1,18 @@
-fdb = require('fdb').apiVersion(200)
-deepak = require('deepak')(fdb)
-
-#ArrayIterator = require('./query/array')
+Query = require('../query')
 
 module.exports = (tr, callback) ->
-  #if (typeof(tr) is 'function')
-    #callback = tr
-    #tr = null
-#
-  #query = new ArrayQuery(@provider.db, @provider.dir.records, [@id], [@id])
-#
-  #queryCallback = (err, arr) =>
-    #for pair in arr
-      #key = @provider.dir.records.unpack(pair.key)
-      #dest = key[1]
-      #@data[dest] = deepak.unpack(pair.value)
-#
-    #if (!err)
-      #@isLoaded = true
-      #@isNew = false
-#
-    #callback(err)
-#
-  #query.execute(tr, queryCallback)
+  if (typeof(tr) is 'function')
+    callback = tr
+    tr = null
+   
+  options =
+    key0: [@id]
+   
+  query = new Query(@.__proto__, options)
+  query.toArray tr, (err, arr) ->
+    if (err)
+      callback(err)
+    else if (arr.length >= 1)
+      callback(null, arr[0])
+      
+    

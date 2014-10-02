@@ -14,15 +14,19 @@ Adder = require('./functions/add')
 IndexAdd = Adder('indexes')
 CounterAdd = Adder('counters')
 
-index = (tr, value) ->
-  if (typeof(index.value) is 'function')
-    v = deepak.pack(index.value(@))
+index = (tr, value, callback) ->
+  if (typeof(tr) is 'function')
+    value = tr
+    tr = null
+  #
+  if (typeof(value) is 'function')
+    v = deepak.pack(value(@))
   else
-    value = ''
+    v = ''
 
-  IndexAdd.call(@, tr, value)
+  IndexAdd.call(@, tr, v, callback)
 
-add = (tr, value) ->
+add = (tr, value, callback) ->
   if (typeof(tr) is 'number')
     value = tr
     tr = null
@@ -30,7 +34,7 @@ add = (tr, value) ->
   inc = new Buffer(4)
   inc.writeUInt32LE(value || 1, 0)
 
-  CounterAdd.call(@, tr, inc)
+  CounterAdd.call(@, tr, inc, callback)
 
 module.exports = (options) ->
   class FoundationDB_ActiveRecord extends ActiveRecord(options)
@@ -51,7 +55,6 @@ module.exports = (options) ->
     save: require('./functions/save')
     index: index
     add: add
-    count: require('./functions/count')
 
     data: (dest, val) ->
       if (dest && !val)
@@ -64,17 +67,20 @@ module.exports = (options) ->
         return val
         
       return super(dest, val)
-      
 
     #@fetchRaw = (subspace, key0, key1) -> new Iterator(@provider.db, subspace, key0, key1)
-    @fetch = (options) -> new Query(@, options)
+    
+    @fetch = (options) -> new Query(@::, options)
     @all = -> 
       options = 
         index: 'pk'
         key0: [] 
         key1: ['\xff']
       
-      new Query(@, options)
+      new Query(@::, options)
+      
+    @count: require('./functions/count')
+      
     @reindex = (name) -> 
       @all().forEachBatch (err, arr) ->
         for rec in arr

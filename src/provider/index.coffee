@@ -9,15 +9,27 @@ config = null
 
 testDir = (dir) ->
   fileName = path.join(dir, 'formalize')
+  
   try
     require(fileName) || require(fileName + '.json')
   catch e
+    console.error(e)
+    return
 
-getConfig = (dbType) ->
+getConfig = (provider) ->
   if (config is null)
     for dir in [path.dirname(require.main.filename), process.cwd()]
       config = testDir(dir)
-      return config[dbType] if (config)
+      
+      if (config)
+        providerConfig = config[provider.dbType]
+        
+        if (typeof(providerConfig) is 'function')
+          return providerConfig(provider)
+        else
+          return providerConfig
+      else
+        return
 
 ### Abstract Provider class
 @param {String} dbName Database name.
@@ -32,7 +44,7 @@ module.exports = class Provider extends EventEmitter
     @ActiveCounter = ActiveFactory.createCounter
 
   _configure: (callback) ->
-    @config = getConfig(@dbType)
+    @config = getConfig(@)
     
     @debug = new Debug(@config.debug)
     @force = @config.force || false

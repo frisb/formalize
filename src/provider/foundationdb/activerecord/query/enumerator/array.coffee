@@ -13,14 +13,14 @@ module.exports = class ArrayEnumerator extends require('./')
       callback = tr
       tr = null
     
-    complete: (err, arr) =>
+    complete = (err, arr) =>
       if (err)
         callback(err)
       else
         # iterate every key-value pair returned
         process.nextTick =>
-          @pumpIn(kv) for kv in arr
-          @pumpOut(callback)
+          @parser.in(kv) for kv in arr
+          @parser.out(callback)
         
     super(tr, complete)
 

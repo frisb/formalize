@@ -16,8 +16,8 @@ module.exports = class EachEnumerator extends require('./')
     func = (kv, next) =>
       # iterate every key-value pair returned
       process.nextTick =>
-        @assembler.pumpIn(kv)
-        @assembler.pumpOut(callback)
+        @parser.in(kv)
+        @parser.out(callback)
         
       next()
         

@@ -1,29 +1,29 @@
 fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
-module.exports = class Assembler
-  constructor: (@query) ->
+module.exports = class Parser
+  constructor: (@subspace, @indexKey) ->
     @assembled = []
     @currentRecord = null
     @key = null
     
-  pumpIn: (kv) ->
-    @key = @query.subspace.unpack(kv.key)
-    @currentRecord = if @query.indexKey then @indexed() else @nonIndexed(kv.value)
+  in: (kv) ->
+    @key = @subspace.unpack(kv.key)
+    @currentRecord = if @indexKey then @indexed() else @nonIndexed(kv.value)
     @currentRecord.keySize += kv.key.length
     @currentRecord.valueSize += kv.value.length
     
-  pumpOut: (callback) ->
+  out: (callback) ->
     if (@assembled.length > 0)
-      @query.marker = @key 
+      @marker = @key 
       callback(null, @assembled)
       @assembled = []
     
   indexed: ->
     # create new ActiveRecord instance
-    rec = new @query.ActiveRecord(null)
+    rec = new @ActiveRecord(null)
     
-    for subkey, i in @query.indexKey
+    for subkey, i in @indexKey
       rec.data(subkey, @key[i]) if (typeof(subkey) isnt 'function')
 
     rec.reset(true)
@@ -47,14 +47,22 @@ module.exports = class Assembler
           @assembled.push(rec)
   
           # create new ActiveRecord instance
-          rec = new @query.ActiveRecord(id)
+          rec = new @ActiveRecord(id)
       else
         # create new ActiveRecord instance
-        rec = new @query.ActiveRecord(id)
+        rec = new @ActiveRecord(id)
         
       rec.data(dest, value) if (dest)
     else
-      rec = new @query.ActiveRecord(id) 
+      #if (typeof(@query.ActiveRecord) isnt 'function')
+        #console.log(@key)
+        #console.log(deepak.unpackArrayValues(fdb.tuple.unpack(value)))
+        #
+        #console.log(@query.provider.ActiveRecord)
+        #
+        #process.exit()
+      
+      rec = new @ActiveRecord(id) 
       map = new Array(@key.length - 1)
       values = fdb.tuple.unpack(value)
       
@@ -66,5 +74,3 @@ module.exports = class Assembler
       @assembled.push(rec)
       
     rec
-    
-  

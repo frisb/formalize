@@ -4,6 +4,8 @@ deepak = require('deepak')(fdb)
 savePartioned = (tr, rec) ->
   # tr.set(rec.provider.dir.records.pack([rec.id]), deepak.pack(''))
     
+  console.log('paritioned')
+    
   for d in rec.schema.destKeys
     if (d isnt 'id') 
       val = rec.data(d)
@@ -39,10 +41,10 @@ save = (tr, rec, callback) ->
       savePartioned(tr, rec)
       
     rec.reset(true)
-    rec.index(tr)
-    rec.add(tr)
-  
-    callback(null, rec)
+    
+    rec.add tr, 1, ->
+      rec.index tr, '', ->
+        callback(null, rec)
 
 transactionalSave = fdb.transactional(save)
 
@@ -51,6 +53,6 @@ module.exports = (tr, callback) ->
     callback = tr
     tr = null
 
-  fdb.future.create (futureCb) =>
-    transactionalSave(tr || @provider.db, @, futureCb)
-  , callback
+  #fdb.future.create (futureCb) =>
+  transactionalSave(tr || @provider.db, @, callback)
+  #, callback

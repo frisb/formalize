@@ -17,8 +17,8 @@ module.exports = class BatchEnumerator extends require('./')
     @func = (arr, next) =>
       # iterate every key-value pair returned
       process.nextTick =>
-        @pumpIn(kv) for kv in arr
-        @pumpOut(callback)
+        @parser.in(kv) for kv in arr
+        @parser.out(callback)
         
       next()
     
@@ -26,12 +26,11 @@ module.exports = class BatchEnumerator extends require('./')
       if (err)
         callback(err)
       else
-        if (@assembled.length > 0)
+        if (@parser.assembled.length > 0)
           callback(null, @assembled)
-        else if (@currentRecord isnt null)
-          @currentRecord.reset(true)
-          callback(null, [@currentRecord])
-        console.log('complete')
-        #callback(null, null)
+        else if (@parser.currentRecord isnt null)
+          @parser.currentRecord.reset(true)
+          callback(null, [@parser.currentRecord])
+        callback(null, null)
         
     super(tr, complete)

@@ -55,6 +55,8 @@ module.exports = (ActiveRecord, callback) ->
       if (initializer isnt null)
         @debug.buffer('loaded from db', 1)
         
+        #@debug.buffer('config initializer', @value.initializer)
+        
         verified = @verify(initializer)
         @debug.buffer('verified', verified)
         
