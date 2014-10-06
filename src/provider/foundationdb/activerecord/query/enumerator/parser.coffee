@@ -2,7 +2,7 @@ fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
 module.exports = class Parser
-  constructor: (@subspace, @indexKey) ->
+  constructor: (@subspace, @indexKey, @ActiveRecord) ->
     @assembled = []
     @currentRecord = null
     @key = null

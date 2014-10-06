@@ -1,7 +1,6 @@
 fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
-Assembler = require('./assembler')
 ArrayEnumerator = require('./enumerator/array')
 BatchEnumerator = require('./enumerator/batch')
 EachEnumerator = require('./enumerator/each')
@@ -23,6 +22,7 @@ module.exports = class Query
       @indexName = options.index
       @key0 = options.key0
       @key1 = options.key1
+      @processes = options.processes
       
     if (@indexName)
       # has an index name
@@ -37,8 +37,8 @@ module.exports = class Query
     else
       @subspace = @provider.dir.records
       
-    #debug.buffer('key0', @key0)
-    #debug.buffer('key1', @key1)
+    #debug.buffer('key0', @key0, deepak.unpackArrayValues, deepak)
+    #debug.buffer('key1', @key1, deepak.unpackArrayValues, deepak)
     
     
     
@@ -49,7 +49,7 @@ module.exports = class Query
     @key0 = [] if !@key0
     #@key1 = deepak.packArrayValues(@key1) if @key1
       
-    #debug.log('Query', @ActiveRecordPrototype.typeName)
+    debug.log('Query', @ActiveRecordPrototype.typeName)
 
   toArray: (tr, callback) -> new ArrayEnumerator(@).execute(tr, callback)
   forEachBatch: (tr, callback) -> new BatchEnumerator(@).execute(tr, callback)

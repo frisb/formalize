@@ -26,15 +26,16 @@ module.exports = (mechanism) ->
     indexDir = rec.provider.dir.indexes[item.name]
     k = pack(indexDir, rec, item.dependsOnIndexKey) 
     
-    transaction = (tr2, innerCallback) ->
-      tr2.get k, (err, val) ->
-        if (val is null)
-          performAddition(tr, rec, item, value) 
-          
-        innerCallback(err)
-        return
+    #tr.options.setReadYourWritesDisable()
     
-    rec.provider.db.doTransaction(transaction, callback)
+    keySelector = fdb.KeySelector.firstGreaterOrEqual(k)
+    
+    tr.getKey keySelector, (err, val) ->
+      if (!err && val is null)
+        performAddition(tr, rec, item, value) 
+        
+      callback(err)
+      return
   
   add = (tr, rec, value, callback) ->
     process = (item, cb) ->
