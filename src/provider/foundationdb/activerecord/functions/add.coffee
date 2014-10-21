@@ -1,14 +1,11 @@
-async = require('async')
 fdb = require('fdb').apiVersion(200)
 deepak = require('deepak')(fdb)
 
+countDictTest = {}
+
 module.exports = (mechanism) ->
-  pack = (directory, rec, key) ->
-    rk = resolveKey(rec, key)
-    directory.pack(deepak.packArrayValues(rk))
-  
   resolveKey = (rec, key) ->
-    rk = []
+    resolvedKey = []
   
     for subkey in key
       if (typeof(subkey) is 'function')
@@ -18,63 +15,40 @@ module.exports = (mechanism) ->
         # get value from record
         data = rec.data(subkey)
   
-      rk.push(data)
+      resolvedKey.push(data)
       
-    rk
-  
-  keyCheck = (tr, rec, item, value, callback) ->
-    indexDir = rec.provider.dir.indexes[item.name]
-    k = pack(indexDir, rec, item.dependsOnIndexKey) 
-    
-    #tr.options.setReadYourWritesDisable()
-    
-    keySelector = fdb.KeySelector.firstGreaterOrEqual(k)
-    
-    tr.getKey keySelector, (err, val) ->
-      if (!err && val is null)
-        performAddition(tr, rec, item, value) 
-        
-      callback(err)
-      return
+    resolvedKey
   
   add = (tr, rec, value, callback) ->
-    process = (item, cb) ->
-      if (item.filter)
-        isSuccess = item.filter(rec)
+    for item in rec[mechanism].items
+      if (!item.filter || item.filter(rec))
+        # no filter or successfully filtered
+        directory = rec.provider.dir[mechanism][item.name]
+        resolvedKey = resolveKey(rec, item.key)
+        packedKey = directory.pack(deepak.packArrayValues(resolvedKey))
         
-        if (isSuccess)
-          if (item.dependsOnIndexKey)
-            keyCheck(tr, rec, item, value, cb)
-          else
-            performAddition(tr, rec, item, value) 
-            cb()
-        else 
-          cb()
-      else 
-        cb()
-        
-      return
-    
-    async.each(rec[mechanism].items, process, callback)
-    return
-    
-  performAddition = (tr, rec, item, value) ->
-    directory = rec.provider.dir[mechanism][item.name]
-    k = pack(directory, rec, item.key)
-    
-    if (mechanism is 'counters')
-      tr.add(k, value || 1)
-    else      
-      tr.set(k, value)
+        if (mechanism is 'counters')
+          #testKey = "#{item.name}:#{rec.id}"
+          #
+          #if (countDictTest[testKey])
+            #console.log(testKey)
+          #else
+            #countDictTest[testKey] = 1
+          
+          #console.log(value)
+          
+          tr.add(packedKey, value)
+        else      
+          tr.set(packedKey, value)
       
     return
   
-  transactionalAdd = fdb.transactional(add)
+  #transactionalAdd = fdb.transactional(add)
   
-  (tr, value, callback) ->
+  (tr, value) ->
     complete = (err) ->
       throw new Error(err) if (err)
-      callback(null)
       return
     
-    transactionalAdd(tr || @provider.db, @, value, complete)
+    #transactionalAdd(tr || @provider.db, @, value, complete)
+    add(tr, @, value)

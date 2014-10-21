@@ -14,19 +14,19 @@ Adder = require('./functions/add')
 IndexAdd = Adder('indexes')
 CounterAdd = Adder('counters')
 
-index = (tr, value, callback) ->
+index = (tr, value) ->
   if (typeof(tr) is 'function')
     value = tr
     tr = null
-  #
+  
   if (typeof(value) is 'function')
     v = deepak.pack(value(@))
   else
     v = ''
 
-  IndexAdd.call(@, tr, v, callback)
+  IndexAdd.call(@, tr, v)
 
-add = (tr, value, callback) ->
+add = (tr, value) ->
   if (typeof(tr) is 'number')
     value = tr
     tr = null
@@ -34,7 +34,7 @@ add = (tr, value, callback) ->
   inc = new Buffer(4)
   inc.writeUInt32LE(value || 1, 0)
 
-  CounterAdd.call(@, tr, inc, callback)
+  CounterAdd.call(@, tr, inc)
 
 module.exports = (options) ->
   class FoundationDB_ActiveRecord extends ActiveRecord(options)

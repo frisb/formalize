@@ -4,8 +4,6 @@ deepak = require('deepak')(fdb)
 savePartioned = (tr, rec) ->
   # tr.set(rec.provider.dir.records.pack([rec.id]), deepak.pack(''))
     
-  console.log('paritioned')
-    
   for d in rec.schema.destKeys
     if (d isnt 'id') 
       val = rec.data(d)
@@ -14,37 +12,37 @@ savePartioned = (tr, rec) ->
         tr.set(rec.provider.dir.records.pack([rec.id, d]), deepak.packValue(val))
     
 save = (tr, rec, callback) ->
-  process.nextTick ->
-    if (!rec.partition)
-      key = [rec.id]
-      value = []
+  #process.nextTick ->
+  if (!rec.partition)
+    key = [rec.id]
+    value = []
+    
+    for i in [0...rec.schema.destKeys.length - 1]
+      v = rec.__d[i + 1]
       
-      for i in [0...rec.schema.destKeys.length - 1]
-        v = rec.__d[i + 1]
+      if typeof v isnt 'undefined'
+        key.push(rec.schema.destKeys[i + 1])
+        #value.push(deepak.packValue(v))
+        value.push('' + v);
         
-        if typeof v isnt 'undefined'
-          key.push(rec.schema.destKeys[i + 1])
-          value.push(deepak.packValue(v))
-          
-      packedKey = rec.provider.dir.records.pack(key)
-      packedValue = fdb.tuple.pack(value)
-      
-      rec.keySize = packedKey.length
-      rec.valueSize = packedValue.length
-      rec.partition ?= rec.keySize > 100 || rec.valueSize > 1024
-      
-      if (!rec.partition)
-        tr.set(packedKey, packedValue)
-      else
-        savePartioned(tr, rec)
+    packedKey = rec.provider.dir.records.pack(key)
+    packedValue = fdb.tuple.pack(value)
+    
+    rec.keySize = packedKey.length
+    rec.valueSize = packedValue.length
+    rec.partition ?= rec.keySize > 100 || rec.valueSize > 1024
+    
+    if (!rec.partition)
+      tr.set(packedKey, packedValue)
     else
       savePartioned(tr, rec)
-      
-    rec.reset(true)
+  else
+    savePartioned(tr, rec)
     
-    rec.add tr, 1, ->
-      rec.index tr, '', ->
-        callback(null, rec)
+  rec.reset(true)
+  #rec.index(tr)
+  #rec.add(tr)
+  callback(null)
 
 transactionalSave = fdb.transactional(save)
 
@@ -53,6 +51,9 @@ module.exports = (tr, callback) ->
     callback = tr
     tr = null
 
+  complete = (err) =>
+    callback(err, @) if callback
+
   #fdb.future.create (futureCb) =>
-  transactionalSave(tr || @provider.db, @, callback)
+  transactionalSave(tr || @provider.db, @, complete)
   #, callback
