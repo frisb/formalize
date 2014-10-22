@@ -22,8 +22,7 @@ save = (tr, rec, callback) ->
       
       if typeof v isnt 'undefined'
         key.push(rec.schema.destKeys[i + 1])
-        #value.push(deepak.packValue(v))
-        value.push('' + v);
+        value.push(deepak.packValue(v))
         
     packedKey = rec.provider.dir.records.pack(key)
     packedValue = fdb.tuple.pack(value)
@@ -40,8 +39,8 @@ save = (tr, rec, callback) ->
     savePartioned(tr, rec)
     
   rec.reset(true)
-  #rec.index(tr)
-  #rec.add(tr)
+  rec.index(tr)
+  rec.add(tr)
   callback(null)
 
 transactionalSave = fdb.transactional(save)
